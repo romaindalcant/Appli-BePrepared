@@ -5,11 +5,11 @@
 import React from 'react';
 import {View,Image,StyleSheet, StatusBar,SafeAreaView,TouchableOpacity,ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { setRefreshToken } from '../auth';
+import { setRefreshToken, CLIENT_ID, CLIENT_SECRET } from '../auth';
 
-const REDIRECT_URI = 'https://app.beprepared.forum-cs.fr/oauth_callback',
-CLIENT_ID = 'f8dc9e85e89b1cded2cf1127f1af4dd1f792802d'
-CLIENT_SECRET = '108f2507d25402eadbe6f61bc4a8feadf29bd858';
+
+const REDIRECT_URI = 'https://app.beprepared.forum-cs.fr/oauth_callback'
+
 
 'https://auth.viarezo.fr/oauth/authorize/?redirect_uri=https://app.beprepared.forum-cs.fr/oauth_callback&client_id=f8dc9e85e89b1cded2cf1127f1af4dd1f792802d&response_type=code&state=LOL&scope=default'
 
@@ -118,7 +118,6 @@ export default class HomePage extends React.Component{
         );
     }
 }
-
 
 const styles = StyleSheet.create({
     container:{
