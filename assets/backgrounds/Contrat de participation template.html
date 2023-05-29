@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<!-- saved from url=(0034)http://127.0.0.1:5500/contrat.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrat</title>
+</head>
+<body>
+    <!--=== 1er Formulaire ===-->
+    <fieldset style="border:solid 1px black; margin-top: 25px">
+        <legend style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">Forum CentraleSupélec</legend>
+        <div>
+            <p>GIE Forum CentraleSupélec</p>
+            <p>Numéro SIRET : 524 920 220 00026</p>
+            <p>Siege social : 3 rue Joliot Curie, 91190 Gif-sur-Yvette</p>
+        </div>
+    </fieldset>
+    <!--=== Fin 1er Formulaire ===-->
+
+    <!--=== 2e Formulaire ===-->
+    <fieldset style="border:solid 1px black; margin-top: 25px">
+        <legend style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">{{ company.name }}</legend>
+        <div>
+            <p>Adresse : {{ company.address }}</p>
+            <p>Tél. : {{ company.phonenumber }}</p>
+            <p>Numéro SIRET : {{ company.billSIRET }}</p>
+            <p>Numéro TVA intra-communautaire : {{ company.billTVA }}</p>
+            <p>Representé par : {{ company.mainContact.firstname }} {{ company.mainContact.lastname }}</p>
+            <p>Fonction : {{ company.mainContact.function }}</p>
+            <p>E-mail : {{ company.mainContact.email }}</p>
+            {#<hr>
+            <p>Libellé Exposant par la suite :</p> #}
+        </div>
+    </fieldset>
+    <!--=== Fin 2e Formulaire ===-->
+
+    <!--=== 3e Formulaire ===-->
+    <fieldset style="border:solid 1px black; margin-top: 25px">
+        <legend style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">Entité à facturer</legend>
+        <div>
+            <p>Nom : {{ company.billingName }}</p>
+            <p>Adresse : {{ company.billingAddress }}</p>
+            <p>Numéro SIRET : {{ company.billSIRET }}</p>
+            <p>Numéro TVA intra-communautaire : {{ company.billTVA }}</p>
+        </div>
+    </fieldset>
+    <!--=== Fin 3e Formulaire ===-->
+
+    {% set price = 0 %}
+    <!--=== 1er Formulaire ===-->
+    <fieldset style="border:solid 1px black; margin-top: 28px">
+        <legend style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">Récapitulatif de la commande</legend>
+         <br>
+        <div>
+            
+                {% set price = 0 %}
+                {% for selectedOption in company.selectedOptions %}
+                    {% set price = price + selectedOption.option.price * selectedOption.count %}
+                    
+                {% endfor %}
+
+                {# si le stand est une StartUp : le prix est de 12€ pour les repas #}
+                {% if company.stand.surface == 3 %}
+                    {% set price = price + company.extraMeal*10 %}
+                {% else %}
+                    {% set price = price + company.extraMeal*50 %}
+                {% endif %}
+                <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+                <tbody><tr style="height:10px;">
+                    <td width="55%" style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">
+                        Prestations contractuelles
+                    </td>
+                    <td width="22.5%" style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">
+                        Quantité
+                    </td>
+                    <td width="22.5%" style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">
+                        Prix HT unité
+                    </td>
+                </tr><tr style="height:10px;">
+                        <td style="border:solid 1px black; font-weight:bold;">
+                            {{ selectedOption.option.label }}
+                        </td>
+                        <td style="border:solid 1px black; font-weight:bold;">
+                            {{ selectedOption.count }}
+                        </td>
+                        <td style="text-align:right; border:solid 1px black; font-weight:bold;">
+                            {{ selectedOption.option.price * selectedOption.count  }} €
+                        </td>
+                    </tr><tr style="height:10px;">
+                    <td style="border:solid 1px black; font-weight:bold;">
+                        Repas des intervenants
+                    </td>
+                    <td style="border:solid 1px black; font-weight:bold;">
+                        {% if company.stand.surface == 3 %}
+                            {{ company.getExtraMeal + 2 }}
+                        {% else %}
+                            {{ company.getExtraMeal + company.stand.surface / 6 }}
+                        {% endif %}
+                    </td>
+                    <td style="text-align:right; border:solid 1px black; font-weight:bold;">
+                        {% if company.stand.surface == 3 %}
+                            {{ (company.getExtraMeal * 10 + 2*10) | number_format(2, ',', ' ') }} €
+                        {% else %}
+                            {{ (company.getExtraMeal * 50 + company.stand.surface / 6 * 50) | number_format(2, ',', ' ') }} €
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr style="height:10px;">
+                    <td style="border:solid 1px black; font-weight:bold;">
+                        Repas offerts
+                    </td>
+                    <td style="border:solid 1px black; font-weight:bold;">
+                        {% if company.stand.surface == 3 %}
+                            {{ 2 }}
+                        {% else %}
+                            {{ company.stand.surface / 6 }}
+                        {% endif %}
+                    </td>
+                    <td style="text-align:right; border:solid 1px black; font-weight:bold;">
+                        {% if company.stand.surface == 3 %}
+                            {{ ( - 2*10) | number_format(2, ',', ' ')}} €
+                        {% else %}
+                            {{ ( - company.stand.surface / 6 * 50) | number_format(2, ',', ' ')}} €
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody></table>
+
+            <table style="border:solid 1px black; border-collapse:collapse;" cellspacing="0" cellpadding="3" width="45%" align="right">
+                <tbody><tr style="height:10px;">
+                    <td width="50%" style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">TOTAL HT</td>
+                    <td width="50%" style="text-align:right; border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">{{ price | number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr style="height:10px;">
+                    <td width="50%" style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">TVA 20.0%</td>
+                    <td width="50%" style="text-align:right; border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">{{ (price * 0.2) | number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr style="height:10px;">
+                    <td width="50%" style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">TOTAL TTC</td>
+                    <td width="50%" style="text-align:right; border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">{{ (price * 1.2) | number_format(2, ',', ' ') }} €</td>
+                </tr>
+            </tbody></table>
+        </div>
+
+         <br><br><br><br><br>
+
+        <div class="info">
+            Cet avenant ne modifie pas le contrat de participation conclu entre les deux parties. Ces options sont facturées au client en plus du montant total de la participation présent sur le contrat participation. Les options feront l'objet d'une seconde facture. En cas d'ajout d'une ou de plusieurs options par l'exposant le jour J, un second avenant sera émis. Le présent avenant sera réputé nul entre les deux parties. 
+        </div>
+
+    </fieldset>
+    <!--=== Fin 1er Formulaire ===-->
+
+    <!--=== 4e Formulaire ===-->
+    <fieldset style="border:solid 1px black; margin-top: 23px">
+        <legend style="border:solid 1px black; font-weight:bold; background-color:#D8D8D8;">Signature</legend>
+        <table cellpadding="10">
+            <tbody><tr>
+                <td style="text-align:justify" width="58%"><br>
+                    <p>
+                        La société confirme que les prestations optionnelles ont bien été effectuées. La société s’engage à régler le montant total de la somme due 30 jours après réception de la facture associée.
+                    </p>
+                    <p>L’engagement de la société vaut acceptation des Conditions Générales de Vente jointes à cet avenant.</p>
+                    <br><br><br><br><br>
+                </td>
+                <td>
+                    <p style="font-size:20px; font-weight:bold;">Fonction et signature :</p>
+                    <p style="font-size:11px">
+                        Pour : {{ company.name }},
+                        <br>
+                        Le : {{ "now"|date("d/m/Y") }}
+                    </p>
+                    <br><br><br><br><br>
+                </td>
+            </tr>
+        </tbody></table>
+    </fieldset>
+    <!--=== Fin 4e Formulaire ===-->
+
+    <!--=== Conditions générales de ventes ==-->
+    <table cellspacing="0" cellpadding="8" width="100%" style="margin-bottom: 20px">
+        <tbody><tr style="height:9px;">
+            <td colspan="3" width="100%" style="border:solid 1px black; font-size:18px; font-weight:bold; background-color:#D8D8D8; text-align:center;">
+                Conditions générales de vente
+            </td>
+        </tr>
+    </tbody></table>
+
+    <div class="container">
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:11px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE PREMIER : Objet
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Le Forum CentraleSupélec est un forum de rencontres rassemblant des exposants et des étudiants, diplômés et doctorants de l'école CentraleSupélec. Les anciens élèves de l’Ecole Centrale Paris et de Supélec, ainsi que toute personne invitée par le Forum CentraleSupélec peuvent également accéder au Forum CentraleSupélec. Les personnes se rendant au Forum CentraleSupélec sont désignées ci-après par la dénomination « visiteurs ». Le Forum CentraleSupélec, désigné ci-après par « l’évènement » aura lieu le 16 novembre 2021 au Palais des Congrès de Paris.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:11px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 2 : Conclusion du contrat
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Le contrat de participation est établi entre la société cliente dite « exposant » et le
+            GIE Forum CentraleSupélec nommé ci-après « FCS » :<br>
+            GIE Forum CentraleSupélec<br>
+            Ecole CentraleSupélec<br>
+            91190 Gif-sur-Yvette<br>
+            Tél : +33 (0)1 75 31 72 60<br>
+            Email : contact@forum-cs.fr<br>
+            RCS : EVRY 524 920 220<br>
+            <br>
+            La conclusion du contrat de participation implique l’adhésion entière et sans réserve des présentes conditions générales de vente et constitue un engagement ferme de participation à l’édition 2021. Le contrat de participation est réputé conclu dès réception par le FCS de l’exemplaire signé par le client, daté et cacheté. Le FCS ne peut s’engager à accueillir le client lors de l’évènement qu’une fois l’inscription validée. L’inscription est réputée validée dès lors qu’un contrat est conclu et que le client a fait parvenir au FCS tout ce qui est nécessaire à sa participation (pièces demandées par le FCS et versement d’un acompte ou de l'intégralité de la participation). Les modifications de ce contrat (augmentation ou diminution du montant, modifications des prestations, ajout d’options supplémentaires etc) ne sont possibles qu’avec l’accord des deux parties, le FCS émettra alors des avenants au présent contrat.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:11px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 3 : Rupture de contrat
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Toute rupture du contrat ou des avenants au présent contrat par le client qui intervient dans les quatre (4) mois précédant la date de la manifestation entraînera l’exigibilité de la moitié du montant total du contrat et avenants au présent contrat. Toute rupture du contrat ou des avenants au présent contrat par le client qui intervient dans le mois précédant la date de la manifestation entraînera l’exigibilité de la totalité du montant du contrat et avenants au présent contrat et à la totalité des avenants au contrat en cours.<br>
+            Dans tous les cas, le client dispose d’un délai de rétractation de sept (7) jours après la conclusion du contrat et avenants au présent contrat. La demande de rupture du contrat et avenants au présent contrat devra être faite par courrier recommandé avec avis de réception, à l’adresse indiquée ci-avant. En aucun cas le client n’est tenu de justifier son choix auprès du FCS.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:11px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 4 : Prestations de base et optionnelles
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Le FCS met à la disposition de l’exposant un espace (désigné par « stand ») de superficie égale à la superficie mentionnée sur le contrat de participation (plus ou moins 10%). Il est ouvert sur au moins un côté. Sauf mention contraire, un boitier électrique d’une puissance de 1kW minimum est fourni (il est possible d’augmenter ce seuil, voir options « électricité supplémentaire »). Ce stand peut rester ainsi nu de tout aménagement et de tout mobilier (cf 4.1.1 Stand nu) ou bien être aménagé (cf 4.1.2 Stand non équipé et 4.1.3. Stand équipé et 4.1.4. Stand équipé premium). Il doit être choisi obligatoirement dans une catégorie (cf Article 9 : Emplacement).<br>
+            Les heures de disponibilité du stand seront fixées par le document logistique transmis à l’exposant après la commande. Elles encadreront une durée au moins égale à la durée d’ouverture au public de la manifestation, qui est fixée de 9h à 17h. Les horaires et conditions de démontage seront spécifiés dans le document "charte démontage" qui sera à signer et à fournir un (1) mois calendaire avant l’événement. Le FCS se réserve le droit de modifier ces horaires d’ouverture sans préavis. Après le choix des prestations techniques par le client, la fiche technique contenant l’ensemble des spécifications du stand du client et des prestations d’équipement doit être validée sans quoi l’inscription amorcée par la signature de ce présent contrat ne pourra être réputée validée.<br>
+            Par la suite, la dénomination « enseignes » désigne un lot composé d’une « enseigne drapeau » (50 x 50 cm) et d’une « enseigne frontale » (1 x 0.15 m). Ces dimensions sont données à titre indicatif et peuvent être modifiées sans préavis. Par la suite la dénomination « ensemble mobilier » désigne un lot de mobilier composé d'un présentoir, d'un comptoir d'accueil, d’une table basse ou haute et de trois chaises ou trois tabourets suivant la formule sélectionnée : basse ou haute.<br>
+	    Dans le cas où une entreprise cliente bénéficie d'une réduction, toute option supplémentaire (cf Article 4.2 et 4.5) sera facturée par le FCS à l'entreprise cliente. En aucun cas une option supplémentaire prise par l'entreprise cliente bénéficie de la réduction sur la participation. <br>
+            <b>4.1 Stands classiques</b><br>
+            <b>4.1.1 Stand nu</b><br>
+            Le FCS met à disposition du client un stand nu de tout aménagement (moquette, structure, cloisons) et de tout mobilier. Ce stand est équipé d'un boitier électrique offrant jusqu'à 3kW de puissance.<br>
+            <b>4.1.2 Stand non-équipé</b><br>
+            Le FCS met à disposition du client un stand comprenant cloisons (laissant au moins une ouverture), enseignes, moquette, poubelle et éclairages mais ne comprenant en particulier pas d’ensemble mobilier.
+            Le montage des cloisons et des enseignes est assuré par le FCS.<br>
+            <b>4.1.3 Stand équipé</b><br>
+            Le FCS met à disposition du client un stand comprenant cloisons (laissant au moins une ouverture), enseignes, moquette, poubelle ainsi qu’un ensemble mobilier. Le montage des cloisons et des enseignes, ainsi que la mise à disposition de l’ensemble mobilier sur le stand sont assurés par le FCS.<br>
+            <b>4.1.4 Stand équipé premium</b><br>
+            Le FCS met à disposition du client un stand de 18 m<sup>2</sup> comportant cloisons (laissant au moins une ouverture), moquette, un ensemble signalétique différencié, un ensemble mobilier différencié (2 tables et 5 assises selon un modèle fonction des préférences du client : mobilier équipé confort (1 table haute, 1 table basse, 2 fauteuils et 3 tabourets) ou rencontre (2 tables hautes, 5 tabourets) ), un comptoir, un tabouret haut et une poubelle. Les stands équipés premium sont situés en zone A (voir article 9). Le montage des cloisons et des enseignes, ainsi que la mise à disposition de l’ensemble mobilier sur le stand sont assurés par le FCS. Ce stand est équipé d'un boitier électrique offrant jusqu'à 3kW de puissance.<br>
+            <b>4.1.5 Stand Startup</b><br>
+            Seules les start-up peuvent louer ce type de stand. Le FCS se réserve le droit d’accepter ou non la demande du client d’accéder à ce type de stand. Le FCS n’est pas tenu de justifier sa décision.<br>
+            Le stand startup est un stand d'environ 3 m<sup>2</sup>, muni de deux tabourets hauts, une table et une poubelle. Un espace de rangement est mis à disposition du client à proximité du stand. Une alimentation électrique est proposée, mais sans aucun engagement sur la puissance fournie.
+            Enfin, le FCS fournit deux (2) paniers repas par stand.<br>
+            <b>4.2 Repas</b><br>
+            Un stand classique donne accès, si les mesures sanitaires en vigueur le jour de l'événement le permettent, à un repas par 6m<sup>2</sup> de stand, sauf mention contraire.
+            Tout repas supplémentaire devra être demandé par le client au FCS avant le 09 novembre 2021 soit sept (7) jours avant l’évènement, et lui sera facturé au prix unitaire de 50€ HT.<br>
+            <b>4.3 Connexion internet</b><br>
+            Le FCS propose au client une connexion Wifi accessible depuis le stand. Le FCS se dégage de toute responsabilité concernant la qualité ou les éventuelles coupures Internet indépendantes de sa volonté durant l’évènement.<br>
+            <b>4.4 Brochure</b><br>
+            Le FCS s’engage à consacrer une page rédactionnelle au client dans sa brochure distribuée aux élèves visiteurs de l'école CentraleSupélec et aux visiteurs autorisés à participer à la manifestation. Toutes les informations requises dans cet article devront être communiquées par le client ou son prestataire au FCS au plus tard le {{ nowOrDownloadDate|date_modify("+ 7 days")|date("d/m/Y") }}. Si cette échéance vient à ne pas être respectée par le client, la page rédactionnelle sera soit celle de l’édition 2019 si le client avait déjà participé, soit sera absente si le client n’avait pas participé à l’édition 2019. Le FCS se réserve le droit de la mise en forme du rédactionnel et de la correction des fautes d’orthographe et de typographie résiduelles. Le FCS s’engage à envoyer ce Bon à tirer au client au plus tard le 10 octobre 2021. Le client devra renvoyer ce Bon à tirer signé au plus tard le 17 octobre 2021. Si cette échéance vient à ne pas être respectée par le client, la page rédactionnelle sera      	    soit celle de l’édition 2019 si le client avait déjà participé, soit sera absente si le client n’avait pas participé à l’édition 2019.<br>
+            Le logo devra être envoyé sous ce même délai par format électronique (.eps, .jpeg, .tiff), en couleur, et posséder une résolution minimale de 300dpi à 100% d’impression (1*1m).<br>
+            En l’absence de logo, ou si celui-ci ne respecte pas ces critères, le logo sera remplacé dans la page et dans les applications par une chaine de caractères noire et majuscule, identique au nom du client. Ces services sont inclus avec toute location de stand, et ne peuvent être vendus séparément.<br>
+            
+	    <b>4.5 Options</b><br>
+            Un « pack » désigne une association de plusieurs options.<br>
+            Sont désignées par « Options » ou « prestations complémentaires », tout service en plus de la location d’un stand classique décrite au paragraphe 4.1. Les tarifs H.T. sont tous précisés au paragraphe 5.2 Options. Le FCS propose aux visiteurs, à titre gratuit ou non, parfois à des fins de communication et de publicité, un catalogue de produits (mallettes, plans, guides, etc.) et de services (site internet, navettes, rencontres avec des clients, etc.). Le FCS tente de les promouvoir au mieux, mais ne peut être tenu responsable si un visiteur ne dispose pas ou n’a pas connaissance d’un ou plusieurs éléments de ce catalogue.<br>
+            <b>4.5.1 Option « Page de publicité »</b><br>
+            Le FCS s’engage à insérer, sous réserve de souscription à cette option, une page de publicité dans la brochure de l’article 4.4, en face de la page rédactionnelle du client. Les pages de publicité devront être envoyées au plus tard le {{ nowOrDownloadDate|date_modify("+ 7 days")|date("d/m/Y") }} sous format électronique (.eps, .jpeg, .tiff), en couleur, et posséder une résolution minimale de 300dpi à 100% de la taille d’impression. La publicité doit être au format portrait, de taille maximale 160*240mm et présenter un bord de découpe de 3mm minimum. Le client devra faire parvenir une épreuve couleur de la publicité sous ce même délai. L’épreuve couleur fera foi en cas de restitution non fidèle des teintes et des nuances. L’absence de celle-ci prive le client de toute réclamation quant au rendu de sa publicité.<br>
+            <b>4.5.2 Option « Quatrième de couverture »</b><br le="" fcs="" s’engage="" à="" insérer,="" sous="" réserve="" de="" souscription="" cette="" option,="" une="" page="" publicité="" dans="" la="" brochure="" l’article="" 4.4,="" en="" quatrième="" couverture.="" devra="" être="" envoyée="" au="" plus="" tard="" 10="" septembre="" 2021="" format="" électronique="" (.eps,="" .jpeg,="" .tiff),="" couleur,="" et="" posséder="" résolution="" minimale="" 300dpi="" 100%="" taille="" d’impression.="" doit="" portrait,="" maximale="" 160*240mm="" présenter="" un="" bord="" découpe="" 3mm="" minimum.="" client="" faire="" parvenir="" épreuve="" couleur="" ce="" même="" délai.="" l’épreuve="" fera="" foi="" cas="" restitution="" non="" fidèle="" des="" teintes="" nuances.="" l’absence="" celle-ci="" prive="" toute="" réclamation="" quant="" rendu="" sa="" publicité.="" offre="" réservée="" (1)="" seule="" entreprise.<br="">
+            <b>4.5.3 Option « Logo »</b><br>
+            Le FCS s’engage à faire figurer, sous réserve de souscription à cette option,
+            le logo du client sur les affiches promotionnelles de l’événement.
+            Le logo devra être envoyé au FCS au plus tard le 11 octobre 2021,
+            par format électronique (.eps, .jpeg, .tiff), en couleur, et posséder une résolution
+            minimale de 300dpi à 100% d’impression (1*1m). Offre limitée à cinq (5) clients.<br>
+            <b>4.5.4 Option « Impression et distribution de flyers »</b><br>
+            Le FCS s’engage à organiser, sous réserve de souscription à cette option, une ou plusieurs distribution(s) de flyers, durant la distribution des mallettes, visant les étudiants de l'école sur le campus de Gif-sur-Yvette, dans la limite de 3000 flyers. Les flyers devront être envoyés avant le 7 octobre 2021 soit 40 jours avant l’évènement. Si l’entreprise décide d’imprimer elle-même les flyers, ceux-ci devront être envoyés avant le 17 octobre 2021 soit 30 jours avant l’événement.<br>
+            <b>4.5.5 Option « Spot publicitaire »</b><br>
+            Le FCS s’engage à diffuser, sous réserve de souscription à cette option, sur des écrans du Palais des Congrès un spot publicitaire fourni par le client, suivi de la localisation du stand de l'exposant. Ledit spot sera diffusé toutes les dix (10) minutes. Ce spot ne devra pas excéder une durée de trente (30) secondes, et devra être envoyé au format électronique (.mkv, .avi, .mp4) par l’entreprise cliente avant le 17 octobre 2021, soit 30 jours avant l’évènement.<br>
+            Le FCS décline toute responsabilité quant au dysfonctionnement éventuel, qu’il soit partiel ou permanent, des écrans mis en place pendant l’évènement.<br>
+            Le FCS se réserve le droit de refuser la diffusion d’un spot dont le contenu lui paraît indécent ou inapproprié, sans avoir à fournir d’explication à l’entreprise cliente.<br>
+            <b>4.5.6 Option « Visibilité »</b><br>
+            Le FCS s’engage à installer, sous réserve de souscription à cette option, des visuels sur le stand (Une double traverse comportant le nom du client, un visuel d'angle et un visuel sur le comptoir). Les images des enseignes devront être envoyées au plus tard le 11 octobre 2021 sous format électronique (.eps, .jpeg, .tiff), en couleur, et posséder une résolution minimale de 300dpi à 100% de la taille d’impression. Cette offre s’adresse aux stands Equipés.<br>
+	    <b>4.5.7 Option « Pack communication »</b><br>
+            Le FCS s’engage à insérer, sous réserve de souscription à cette option, une page de publicité dans la brochure de l’article 4.4, selon les modalités fixées à l’article 4.5.1 et à organiser, sous réserve de souscription à cette option, une ou plusieurs distribution(s) de flyers, selon les modalités fixées à l’article 4.5.4.<br>
+            <b>4.5.8 Option « Tablette tactile »</b><br>
+            Le FCS s’engage à fournir, sous réserve de souscription à cette option, au client le nombre de tablettes commandées. Le FCS se décharge de toute responsabilité en cas de dysfonctionnement du matériel mis à disposition des intervenants. Tout dommage causé par l’utilisateur sera à sa charge et retenu sur le montant de la caution. Aucune tablette ne sera remise à défaut de remise d’un chèque de caution de 300.00 € en contrepartie.<br>
+            <b>4.5.9 Option « Écran supplémentaire »</b><br>
+            Le FCS s’engage à fournir, sous réserve de souscription à cette option, au client le nombre d’écrans commandés. Le FCS se décharge de toute responsabilité en cas de dysfonctionnement du matériel mis à disposition des intervenants. Tout dommage causé par l’utilisateur sera à sa charge et retenu sur le montant de la caution. Aucun écran ne sera remis à défaut de remise d’un chèque de caution de 600.00 € en contrepartie.<br>
+            <b>4.5.10 Options « Café Rencontre » , « Déjeuner Rencontre »</b><br>
+            Le FCS s’engage à assurer, sous réserve de souscription à cette option, un déjeuner ou un café entre un ou deux intervenants désignés par le client et dix (10) étudiants de l’Ecole CentraleSupélec. La sélection des élèves est assurée par le client dans un panel d'étudiants ayant manifesté leur intérêt pour rencontrer l'exposant. Le FCS se décharge de toute responsabilité concernant la ponctualité et la qualité de la rencontre. Le FCS assure la collecte et la transmission des CV des élèves mais ne peut garantir ni leur qualité ni leur quantité.<br>
+            Les déjeuners des clients pour cette option s’ajoutent aux repas mentionnés au paragraphe 4.2. Les cafés des clients pour cette option s’ajoutent aux cafés qui seront servis librement sur le salon.
+	    Dans le cas où des mesures gouvernementales liées à la pandémie de Covid-19 empêchent la tenue des "Déjeuners Rencontre" et/ou des "Cafés Rencontre", le FCS s'engage à rembourser à l'exposant la somme déjà payée pour la souscription d'options "Déjeuner Rencontre" et/ou "Café Rencontre".<br>
+            <b>4.5.11 Option « Electricité supplémentaire »</b><br>
+            En plus de la prestation d'électricité de base fournie pour la location d’un stand,
+            le client peut demander à obtenir 3kW ou 8kW de puissance supplémentaire.
+            Le FCS s’engage à fournir, sous réserve de souscription à cette option, l’électricité
+            supplémentaire commandée avant le 17 octobre 2021 soit 30 jours avant l’évènement. Passé cette date, le FCS ne peut garantir la réalisation de la prestation.<br>
+            <b>4.5.12 Option « Mobilier supplémentaire »</b><br>
+            Le FCS s’engage à fournir, sous réserve de souscription à cette option, le mobilier supplémentaire commandé. Le mobilier supplémentaire doit être commandé avant le 17 octobre 2021, soit 30 jours avant l’évènement. Passé cette date, le FCS ne peut garantir la réalisation de la prestation. Toute description précise du matériel supplémentaire est impossible car sujette à changement.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 0.5px black; font-size:6.7px;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 5 : Tarifs
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            <b>5.1 Tarifs </b><br><b>5.1.1 Stands classiques</b>
+        </p>
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="1">
+            <tbody><tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Type de stand</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;" colspan="2">Stand nu</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;" colspan="2">Stand non-équipé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;" colspan="2">Stand équipé</td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Surface</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Zone A</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Zone B</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Zone A</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Zone B</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Zone A</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Zone B</td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">12 m<sup>2</sup></td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">4 600.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">3 800.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">4 800.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">3 900.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">5 400.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">4 500.00 €</td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">18 m<sup>2</sup></td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">6 700.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">5 800.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">6 900.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">5 900.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">7 500.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">6 600.00 €</td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">24 m<sup>2</sup></td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">7 900.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">7 100.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">36 m<sup>2</sup></td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">11 100.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">48 m<sup>2</sup> (*)</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">14 100.00 €</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+                <td style="text-align:center; border:solid 1px black; font-size:10px;">Non proposé</td>
+            </tr>
+        </tbody></table>
+        <p>
+            Tous les prix unitaires ci-après sont énoncés hors taxe (HT) et sont soumis au taux normal de TVA en vigueur au moment de la facturation.<br>
+            (*) Il est possible au client, dans la limite des emplacements disponibles, ceci relevant de la discrétion du FCS, de prendre un stand de 48m<sup>2</sup>.<br>
+            <b>5.1.2 Stand équipé premium</b><br>
+            Le Stand équipé premium (18m<sup>2</sup>) est facturé 8 800.00 € HT.<br>
+            <b>5.1.3 Stand Start-up</b><br>
+            Ce type de prestation, dont les modalités et la description ont été présentées en 4.1.5, est facturé :<br>
+            - 830 € HT pour un stand Start-Up classique <br>
+	    - 930 € HT pour un stand Start-Up visibilité <br>
+	    <b>5.1.4 Réduction accordée aux PME</b><br>
+            Les PME louant un stand Equipé de 12 m2 en zone B peuvent bénéficier d’une réduction de 35%, sur le prix du stand uniquement, à condition d'en faire la demande. Toutes les options et prestations complémentaires ne peuvent faire l’objet de cette réduction.<br>
+            Sont dites PME les entreprises de moins de 250 salarié+s et réalisant un chiffre d’affaires annuel inférieur à cinquante (50) millions d’euros ou un total de bilan n’excédant pas quarante trois (43) millions d’euros, conformément à la définition de l’INSEE au 13/10/2016. Les clients qui souhaitent bénéficier de la réduction selon les conditions susmentionnées doivent pouvoir produire tout document que le FCS estimera utile afin de vérifier ce statut.<br>
+            <b>5.2 Options</b><br>
+            <b>5.2.1 Rencontre</b><br>
+            - Café Rencontre : 800.00 € HT<br>
+            - Déjeuner Rencontre : 1500.00 € HT<br>
+            <b>5.2.2 Digital</b><br>
+            - Tablettes tactiles : 200.00€ HT par tablette<br>
+            - Écran supplémentaire : 450.00 € HT<br>
+            <b>5.2.3 Communication</b><br>
+            - Quatrième de couverture : 1500.00 €HT (Offre limité à un (1) client)
+            - Impression et distribution de Flyers : 800.00 € HT<br>
+            - Page de publicité : 800.00 € HT<br>
+            - Spot publicitaire : 350.00 € HT<br>
+            - Logo : 600.00 € HT (Offre limitée à cinq (5) clients)<br>
+            - Visibilité : 450.00 € HT<br>
+            - Pack Communication : 1300.00€ HT <br>
+            <b>5.2.4 Logistique</b><br>
+            - 3 kW de puissance en plus de l'offre de base pour la location d’un stand nu, simple ou équipé : 460.00 € HT<br>
+            - 8 kW de puissance en plus de l'offre de base pour la location d’un stand nu, simple ou équipé : 780.00 € HT<br>
+            - Porte manteau : 40.00 € HT<br>
+            - Chaise (haute ou basse) : 60.00 € HT<br>
+            - Table (haute ou basse) : 150.00 € HT<br>
+            - Comptoir : 180.00 € HT<br>
+            - Présentoir : 80.00 € HT<br>
+
+
+            <br>
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 6 : Facturation
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Deux factures seront émises au titre du Forum CentraleSupélec 2021.<br>
+            La première facture concernera uniquement le type de stand choisi par le client.
+            Le montant de la facturation est égal au montant du contrat de participation.
+            La facture est établie au nom apparaissant dans le champ « facturation » du contrat de participation.
+            {% if not company.onePayment %}
+
+                Le client s’engage à régler un acompte de 30% du montant total de cette facture, par virement ou par chèque, au plus tard trente (30) jours 
+		après réception de la facture d'acompte.
+                Le FCS se réserve le droit, en cas de problème majeur empêchant la tenue de l'événement, de conserver un acompte de 30% du montant total.
+                Le client s’engage à régler le restant de la somme due, par virement ou par chèque, au plus tard trente (30) jours après réception de la facture de solde.
+
+            {% else %}
+
+                Le client s’engage à régler l'intégralité du montant total de cette facture, par virement ou par chèque, au plus tard trente (30) jours après réception de la facture.
+                Le FCS se réserve le droit, en cas de problème majeur empêchant la tenue de l'événement, de conserver 30% du montant total.
+
+            {% endif %}
+            Le non-respect de ces délais entraînera une pénalité mensuelle égale à trois fois le taux d’intérêt par défaut pour cette facture.<br>
+            La deuxième facture émise concernera l’ensemble des options auxquelles aura souscrit le client.
+            La facture est établie au nom apparaissant dans le champ « facturation » du contrat de participation, et sera émise dans le semaine suivant l’édition 2021 
+	    du Forum CentraleSupélec. Le client s’engage à régler la totalité de cette facture, par le moyen de paiement choisi, au plus tard 40 jours après réception de la facture
+	    Le non-respect de ces délais entraînera une pénalité mensuelle égale à trois fois le taux d’intérêt par défaut pour cette facture.
+            Le client s’engage à communiquer toutes les informations nécessaires au traitement de la facture dans les délais par son service comptabilité fournisseur
+	    (adresse de facturation, numéro de commande, …).<br>
+            La facturation majore les tarifs indiqués dans l’article 6 par la taxe sur la valeur ajoutée (TVA) au taux normal de la TVA en vigueur. 
+	    N° de TVA intracommunautaire : FR10524920220 (GIE Forum CentraleSupélec).<br>
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 7 : Propriété intellectuelle et droit à l’image
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Le client, ainsi que tout personnel du client prenant part à la manifestation, ne pourra se prévaloir de droits patrimoniaux quelconques quant à la diffusion des publicités et du rédactionnel, et, le cas échéant, du spot publicitaire, par le FCS conformément aux présentes conditions générales de vente. Le client, ainsi que tout personnel prenant part à la manifestation, s’engage à autoriser l’utilisation par le FCS de photographies et de contenus audiovisuels pris lors de la manifestation.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 8 : Fréquentation
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Le FCS n’est pas garant du nombre de visiteurs sur le site ou sur le stand du client, du nombre de profils intéressants ou de leur qualité.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 9 : Emplacement
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            En ce sens, le client ne pourra pas réclamer de réduction sur les sommes qui lui seront facturées par le FCS si ses objectifs n’ont pas été atteints. Le FCS établit le plan du salon et effectue la répartition des emplacements librement, en tenant compte le plus largement possible des désirs exprimés par le client, de la nature de son activité, de la disposition du stand qu'il se propose d'installer ainsi que, si nécessaire, de la date d'enregistrement de la conclusion du contrat et de l'ancienneté du client. Néanmoins le FCS ne peut en aucun cas réserver un emplacement, ni garantir celui-ci d'une session sur l'autre. La participation à des manifestations antérieures ne crée en faveur du client aucun droit à un emplacement déterminé et ne lui confère aucune priorité dans l'attribution des emplacements. L'emplacement du stand attribué à un client lui est communiqué au moyen d'un plan. Ce plan donne une représentation aussi précise que possible du stand et indique le découpage général des îlots environnant l'emplacement attribué. Ces indications, valables à la date d'établissement du plan, sont données à titre d'information et sont susceptibles de modifications que le FCS portera à la connaissance du client au plus tard lors de la manifestation. Les emplacements situés en zone A bénéficient d’une meilleure visibilité dans le Palais des Congrès et sont situés de telle manière que l’affluence y est plus importante qu'en zone B. Le FCS se décharge de toute responsabilité concernant l’affluence au stand du client.<br>
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 10 : Sécurité
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Les clients ayant prévu d’amener lors de la manifestation leur propre stand, structure ou mobilier sont tenus d’adresser une copie du procès-verbal de classement de réaction au feu des matériaux utilisés conformément à la législation relative aux ERP, au plus tard trois semaines avant la date de la manifestation. La non-présentation de ce document entrainera le refus par le FCS du montage du stand ou du mobilier concernés.<br>Le client est tenu de communiquer le nom du prestataire chargé de l’installation de son stand, de sa structure, ou de son mobilier, ainsi que toutes les informations que le FCS jugera utiles dans les limites légales.
+            <br>
+            Dans le cas où le client choisit un stand nu, selon les modalités fixées à l’article 4.1.1, l’exposant s’engage à ne pas installer un stand dont la hauteur est supérieure à trois (3) mètres.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 11 : Assurances
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Le client est tenu d’adresser une attestation d’assurance de responsabilité civile, précisant que le client est couvert pour la participation à la manifestation. L’assurance doit être valable pour toute la durée de la manifestation.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 12 : Prêt de structure et de mobilier
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            La mise à disposition du stand et des aménagements prévus dans l’ARTICLE 5 n’entraîne aucun transfert de propriété de ceux-ci vers le client.<br><br>
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 13 : Mobilier et propriétés du client
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Toute dégradation ou non restitution de ces biens, du fait des intervenants du client, de ses prestataires, ou des visiteurs présents sur son stand, sera facturée au client. Le FCS se dégage de toute responsabilité en cas de vol, de perte, ou de dégradation causée par un tiers aux propriétés du client.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 14 : Responsabilité des prestataires du client
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Toute dégradation des locaux, du mobilier destiné ou non à la manifestation, par le client, ses représentants ou ses prestataires, au cours de la manifestation, de la période de montage ou de démontage, sera facturée au client. Le FCS se dégage de toute responsabilité en cas de vol, de perte, ou de dégradation causée par un tiers aux propriétés du client.
+        </p>
+
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 15 : Traitement des données personnelles et utilisation du site internet
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            Les données collectées dans le contrat de participation, sur le site internet www.forum-cs.fr, dans l’application, ou via tout autre support sont enregistrées à des fins de gestion et de prospection. Elles ne sont pas communiquées à des tiers, sauf à des fins de traitement et d’analyse. Conformément aux articles 39 et 40 de la loi du 6 Janvier 1978 relative à l’informatique, aux fichiers, et aux libertés, vous disposez d’un droit d’accès ou de rectification des données vous concernant, par courrier à l’adresse : Forum CentraleSupélec, 3 rue Joliot Curie, 91190 Gif-sur-Yvette ou par voie électronique à l’adresse mail : contact@forum-cs.fr.<br>
+Pour tout traitement de données personnelles effectué en relation avec ce contrat, les parties se conformeront au règlement (UE) 2016/679 du Parlement Européen et du Conseil du 27 avril 2016, relatif à la protection des personnes physiques à l'égard du traitement des données à caractère personnel et à la libre circulation de ces données, et abrogeant la directive 95/46/CE (règlement général sur la protection des données). <br>
+Le FCS déclare et garantit au client qu'il se conformera strictement au RGPD pour tout traitement des données personnelles effectuées en rapport avec ce contrat. <br>
+Le FCS s'engage à tenir informer le client et à se conformer au RGPD si le FCS effectue d'autres traitements de données à caractère personnel, ou permet à un tiers de le faire.<br>
+L'inscription du Client à l'événement proposé par le FCS se fera sur son site internet. Le FCS s'engage à utiliser les données personnelles transmises par le Client à des fins professionnelles et à se conformer strictement au RGPD. 
+        </p>
+
+       
+        <table style="border-collapse:collapse; border:solid 1px black;" cellspacing="0" cellpadding="3" width="100%">
+            <tbody><tr style="height:10px;">
+                <td width="100%" style="border:solid 1px black; font-size:12px; background-color:#D8D8D8; text-align:left;">
+                    ARTICLE 16 : Cas de l'annulation du Forum CentraleSupélec en raison de la pandémie du COVID-19
+                </td>
+            </tr>
+        </tbody></table>
+        <p>
+            <b>16.1 Solution de remplacement:</b><br>
+            Le FCS se réserve le droit d’annuler l’évènement au plus tard le 15 octobre 2021, soit un (1) mois avant l'événement, du fait de la pandémie de Covid-19. 
+	    Dans ce cas, le FCS s’engage à prévenir le client par tout moyen écrit et à proposer au client un événement digital en remplacement 
+	    Cet événement sera dénommé ci-après Forum Virtuel 2021.
+            En cas d’annulation du Forum, le client s’engage à participer au Forum Virtuel 2021, dont la tarification est détaillée ci-dessous.
+
+            <b>16.2 Forum Virtuel</b><br>
+            La solution de remplacement est un Forum Virtuel qui se déroulera sur une durée d'au moins trois (3) jours au mois de Novembre 2021. 
+            La plateforme Web permettra la connexion simultanée du nombre d'intervenants que le cleint souhaite.
+            Le FCS n’est pas garant du nombre de visiteurs sur le site, du nombre de profils intéressants ou de leur qualité. 
+	    En ce sens, le client ne pourra pas réclamer de réduction sur les sommes qui lui seront facturées par le FCS si ses objectifs n’ont pas été atteints.
+            Le FCS ne pourra en aucun cas être tenu pour responsable de tout dysfonctionnement de la plateforme Web hébergeant le Forum Virtuel 2021.
+
+            <b>16.3 Tarifs</b><br>
+            <b>16.3.1 Facturation du Forum Virtuel et annulation de la facturation du Forum</b><br>
+            En cas d'annulation du Forum, le FCS s'engage à rembourser la différence entre le montant de la participation au Forum indiqué dans ce contrat et le montant de la participation au Forum Virtuel 2021.
+            Le FCS s'engage à rembourser la totalité des options choisies par le client, à l'exception des options "Logo sur les affiches", "Flyers", qui seront reconduites automatiquement sur l'événement Forum Virtuel 2021.
+            <b>16.3.2 Tarification classique</b><br>
+            Si le client a choisi un stand « Classique » (nu, non-équipé, équipé haut ou bas ou équipé premium) pour sa participation à l’événement, il sera facturé 2 000.00 € hors taxe (HT) pour sa participation au Forum Virtuel 2021 en cas d’annulation de l’événement. Le montant de la participation au Forum en présentiel ne sera alors pas réclamé par le FCS.
+            <b>16.3.3 Tarification Start-Up</b><br>
+            Si le client a choisi un stand « Start-Up » pour sa participation à l’événement, il sera facturé 830.00 € hors taxe (HT) pour sa participation au Forum Virtuel 2021 en cas d’annulation de l’événement. Le montant de la participation au Forum en présentiel ne sera alors pas réclamé par le FCS.
+            <b>16.3.4 Réduction accordée aux PME</b><br>
+            En cas d’annulation de l’événement, les PME ayant commandé un stand Equipé de 12 m2 en zone B peuvent bénéficier d’une réduction de 35%, sur le prix du Forum Virtuel 2021, à condition d’en faire la demande.
+            Sont dites PME les entreprises de moins de 250 salariés et réalisant un chiffre d’affaires annuel inférieur à cinquante (50) millions d’euros ou un total de bilan n’excédant pas quarante trois (43) millions d’euros, conformément à la définition de l’INSEE au 13/10/2016. Les clients qui souhaitent bénéficier de la réduction selon les conditions susmentionnées doivent pouvoir produire tout document que le FCS estimera utile afin de vérifier ce statut.
+	</p>
+
+    </div>
+    <!--=== End Conditions générales de ventes ==-->
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body></html>
