@@ -1,54 +1,121 @@
-// Penser à l'inclure dans Calendar.js (photo, nom du mec...)
 //Bouton deconnexion, bouton pour activer les notifications/tester les pushs
-
 import React from 'react';
-import { View, StyleSheet, Image, StatusBar, Text, TouchableOpacity, TextInput,SafeAreaView ,KeyboardAvoidingView, ImageBackground} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  ImageBackground,
+  Alert,
+  ActivityIndicator
+} from 'react-native';
 import { ReservationButton } from './Paps';
+import { getToken } from '../auth';
 
-export default class Profile extends React.Component{
-    constructor(props){
-        super(props)
+
+export default class Profile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: {
+        token: null,
+        personalInfo: null,
+      },
+      loading: true,
+    };
+    console.log(this.props.setAuthenticated)
+  }
+
+  handleLogout(){
+    // Effectuer les opérations de déconnexion ici
+    this.props.setAuthenticated(false); // Mettre à jour l'état à false
+  };
+
+  async getPersonalInfo() {
+
+    const token = await getToken().then((response) => {
+      this.setState((prevState) => ({
+        data: {
+          ...prevState.data,
+          token: response,
+        },
+      }));
+      return response
+    });
+
+    const personalInfo = await fetch('https://auth.viarezo.fr/api/user/show/me', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.state.data.token}`,
+      },
+    }).then((response) => response.json());
+
+    this.setState({ loading: false });
+    this.setState((prevState) => ({
+      data: {
+        ...prevState.data,
+        personalInfo: personalInfo,
+      },
+    }));
+  }
+
+  componentDidMount() {
+    this.getPersonalInfo();
+  }
+
+  render() {
+    const { data, loading } = this.state;
+
+    if (loading) {
+      return <ActivityIndicator />;
     }
 
-    render(){
-        return <SafeAreaView style={styles.container}>
-        <View style={styles.profileContainer}>
-            <View style={styles.profile}>
-            <Image
-            style={styles.image}
-            source={require('../assets/emojis/user.png')}></Image>
-            <View>
-                <Text style={styles.name}>Gabriel</Text>
-                <Text style={styles.name}>Landman</Text>
-            </View>
-            </View>
-        
+    if (!data.personalInfo) {
+      return null;
+    }
 
-            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-        <Text style={styles.forgotText}>Se déconnecter</Text>
-        </TouchableOpacity>
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.profileContainer}>
+          <View style={styles.profile}>
+            <Image
+              style={styles.image}
+            //mettre image perso avec la bonne requête !
+              source={require('../assets/emojis/user.png')}
+            ></Image>
+            <View>
+              <Text style={styles.name}>{data.personalInfo.firstName}</Text>
+              <Text style={styles.name}>{data.personalInfo.lastName}</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity onPress={this.handleLogout}>
+            <Text style={styles.forgotText}>Se déconnecter</Text>
+          </TouchableOpacity>
         </View>
 
-        
+        <TouchableOpacity
+          style={styles.loginBtn}
+          onPress={() => this.props.navigation.navigate('MainPage')}
+        >
+          <Text style={styles.loginText}>Je réserve un atelier</Text>
+        </TouchableOpacity>
 
-    <TouchableOpacity style={styles.loginBtn}   onPress={() => this.props.navigation.navigate('MainPage')}>
-        <Text style={styles.loginText}>Je réserve un atelier</Text>
-    </TouchableOpacity>
-    
-    <TouchableOpacity style={styles.loginBtn}   onPress={() => this.props.navigation.navigate('Ma journée')}>
-    <Text style={styles.loginText}>Voir ma journée</Text>
-    </TouchableOpacity>
-
-    </SafeAreaView>
-        // <ImageBackground
-        // style={styles.backgroundImage}
-        // source={require('../assets/backgrounds/gradientbleu.png') }
-        // >
-        
-        {/* </ImageBackground> */}
-    }
+        <TouchableOpacity
+          style={styles.loginBtn}
+          onPress={() => this.props.navigation.navigate('Ma journée')}
+        >
+          <Text style={styles.loginText}>Voir ma journée</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
 }
-
 
 const styles = StyleSheet.create({
     name:{

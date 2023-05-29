@@ -8,7 +8,6 @@ import { getToken } from './auth';
 
 import MainBP from './BePrepared/MainBP';
 import MainForum from './Forum/MainForum';
-import Login from './Global/Login';
 import Calendar from './Global/Calendar';
 import Profile from './Global/Profile';
 import HomePage from './Global/HomePage';
@@ -23,13 +22,6 @@ const Stack = createNativeStackNavigator()
 
 
 /* Attention pour les api : utiliser un base_url avant chaque appel !!!! pour pas avoir a tout hardcode quand on change de serveur!!!!*/
-
-function ProfileStack(){
-  return <Stack.Navigator initialRouteName='Login'>
-    <Stack.Screen name='Login' component={Login}  options={{ headerShown: false}}></Stack.Screen>
-    <Stack.Screen name='Mon Profil' component={Profile}  options={{ headerShown: false }}></Stack.Screen>
-  </Stack.Navigator>
-}
 
 function HomeStack(){
   return <Stack.Navigator initialRouteName='HomePage'>
@@ -113,7 +105,7 @@ export default function App() {
         borderBottomColor: '#3F71A8',
         }}}></Tab.Screen>
 
-      <Tab.Screen name="Profil" component={ProfileStack} options={{headerStyle: {
+      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated} />} options={{headerStyle: {
         height: 80,
         borderBottomWidth: 3,
         borderBottomColor: '#3F71A8',

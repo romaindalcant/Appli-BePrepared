@@ -5,7 +5,7 @@
 import React from 'react';
 import {View,Image,StyleSheet, StatusBar,SafeAreaView,TouchableOpacity,ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { setRefreshToken, CLIENT_ID, CLIENT_SECRET } from '../auth';
+import {setToken, setRefreshToken, CLIENT_ID, CLIENT_SECRET } from '../auth';
 
 
 const REDIRECT_URI = 'https://app.beprepared.forum-cs.fr/oauth_callback'
@@ -27,18 +27,9 @@ export class MyWeb extends React.Component {
   }
 
   handleWebViewNavigationStateChange = async (newNavState) => {
-    // newNavState looks something like this:
-    // {
-    //   url?: string;
-    //   title?: string;
-    //   loading?: boolean;
-    //   canGoBack?: boolean;
-    //   canGoForward?: boolean;
-    // }
+  
     const { url } = newNavState;
     if (!url) return;
-    console.log(url);
-
     // handle certain doctypes
     if (url.startsWith(REDIRECT_URI)) {
       this.setState({loading: true})
@@ -49,7 +40,7 @@ export class MyWeb extends React.Component {
       // Merge back the rest (add any "?" in the rest), explode by &
       params = params.join("?").split('&');
       const parsed_values = {};
-      for (const param in params) {
+      for (const param of params) {
         const [name, ...values] = param.split('=');
         const value = values.join('=');
         parsed_values[name] = value;
@@ -68,17 +59,13 @@ export class MyWeb extends React.Component {
               '&client_secret=' + CLIENT_SECRET,
       })
       .then((response) => {
-        console.log(response)
         return response.json()})
       .then(data => {
-        // setToken(data.access_token, data.expires_at);
-        // // c'est expires_at pas expires_in
-        // setRefreshToken(data.refresh_token);
         setToken(data);
         setRefreshToken(data)
       })
       .catch(error => {
-        console.error(error);
+        console.log(error);
       });
 
       // All done, tell the parent container we're done!

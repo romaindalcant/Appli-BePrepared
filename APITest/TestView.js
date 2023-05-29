@@ -27,7 +27,7 @@ function NewAtelierData ({id}) {
     }
   }, [id]);
 
-  return <Text>Information sur l'atelier {id}: {JSON.stringify(data)}</Text>
+  return <Text>Baise la daronne de jam {id}: {JSON.stringify(data)}</Text>
 }
 
 export default class Test extends React.Component{
