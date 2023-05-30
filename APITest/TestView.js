@@ -27,7 +27,10 @@ function NewAtelierData ({id}) {
     }
   }, [id]);
 
-  return <Text>Baise la daronne de jam {id}: {JSON.stringify(data)}</Text>
+  return <View><Text style={styles.text}>21/11/2023</Text>
+  <Text style={styles.text}>Palais des Congrés</Text>
+  <Text style={styles.text}>Restez Branchés !</Text></View>
+
 }
 
 export default class Test extends React.Component{
@@ -38,6 +41,13 @@ export default class Test extends React.Component{
 }
 
 const styles = StyleSheet.create({
+  text:{
+    color: 'black',
+    fontSize: 27,
+    fontWeight: 500,
+    textAlign:'center',
+    padding: 10,
+  },
   card: {
     backgroundColor: 'white',
     borderRadius: 10,

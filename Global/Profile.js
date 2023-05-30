@@ -14,7 +14,6 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
-import { ReservationButton } from './Paps';
 import { getToken } from '../auth';
 
 
@@ -85,7 +84,7 @@ export default class Profile extends React.Component {
           <View style={styles.profile}>
             <Image
               style={styles.image}
-            //mettre image perso avec la bonne requête !
+            //mettre image perso avec la bonne requête ! (on ne peut pas)
               source={require('../assets/emojis/user.png')}
             ></Image>
             <View>
@@ -101,17 +100,20 @@ export default class Profile extends React.Component {
 
         <TouchableOpacity
           style={styles.loginBtn}
-          onPress={() => this.props.navigation.navigate('MainPage')}
+          onPress={() => this.props.navigation.navigate('ListPage')}
+          // ou essayer onPress={() => this.props.navigation.navigate('HomeStack',{screen: 'ListPage'})}
         >
           <Text style={styles.loginText}>Je réserve un atelier</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.loginBtn}
-          onPress={() => this.props.navigation.navigate('Ma journée')}
+          onPress={() => this.props.navigation.navigate('Mon BP')}
         >
-          <Text style={styles.loginText}>Voir ma journée</Text>
+          <Text style={styles.loginText}>Voir mes ateliers</Text>
         </TouchableOpacity>
+
+      {/* Ajouter un bouton 'Activer les notifications' */}
       </SafeAreaView>
     );
   }

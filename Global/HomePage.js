@@ -23,6 +23,8 @@ export class MyWeb extends React.Component {
     return <WebView
     source={{ uri: 'https://auth.viarezo.fr/oauth/authorize/?redirect_uri=' + REDIRECT_URI + '&client_id=' + CLIENT_ID + '&response_type=code&state=LOL&scope=default' }} 
     onNavigationStateChange={this.handleWebViewNavigationStateChange}
+    style = {styles.webview}
+    // essayer de styliser !
     />;
   }
 
@@ -113,6 +115,9 @@ const styles = StyleSheet.create({
       // backgroundColor: '#C3E9FC',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    webview:{
+      backgroundColor: '#98C1D9'
     },
     image:{
       width: 300,

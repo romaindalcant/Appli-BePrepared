@@ -35,7 +35,7 @@ export default class MainBP extends React.Component{
             <CarouselSnap section='évenements'></CarouselSnap>
         </View> 
 
-        <TouchableOpacity style={styles.loginBtn}   onPress={() => this.props.navigation.navigate('MainPage')}>
+        <TouchableOpacity style={styles.loginBtn}   onPress={() => this.props.navigation.navigate('ListPage',{section : 'ateliers'})}>
             <Text style={styles.loginText}>Je réserve un atelier</Text>
         </TouchableOpacity>
 

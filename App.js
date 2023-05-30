@@ -20,14 +20,10 @@ import {MyWeb} from './Global/HomePage';
 const Tab = createBottomTabNavigator ()
 const Stack = createNativeStackNavigator()
 
-
-/* Attention pour les api : utiliser un base_url avant chaque appel !!!! pour pas avoir a tout hardcode quand on change de serveur!!!!*/
-
 function HomeStack(){
   return <Stack.Navigator initialRouteName='HomePage'>
     <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false }}></Stack.Screen>
     <Stack.Screen name="MainForum" component={MainForum} options={{ headerShown: false }}></Stack.Screen>
-    {/* <Stack.Screen name="MainBP" component={MainForum}></Stack.Screen> */}
     <Stack.Screen name="MainBP" component={MainBP} options={{ headerShown: false }} ></Stack.Screen>
     <Stack.Screen name="ListPage" component={ListPage} options={{ headerShown: false }}></Stack.Screen>
     <Stack.Screen name="AtelierPage" component={AtelierPage} initialParams={{ title: 'Hello, world!' }}></Stack.Screen>
@@ -48,8 +44,9 @@ export default function App() {
   }, []);
 
   if (loading) {
-    // TODO Improve design
-    return <ActivityIndicator size={"large"} />;
+    return <View style={styles.container}>
+              <ActivityIndicator size="large" color="#0000ff" />
+          </View>
   }
 
   if (!authenticated){
@@ -63,7 +60,7 @@ export default function App() {
           let iconName;
           if (route.name === 'Home') {
             iconName = focused ? 'ios-information-circle': 'ios-information-circle-outline';
-          } else if (route.name === 'Ma journée') {
+          } else if (route.name === 'Mon BP') {
             iconName = focused ? 'ios-time' : 'ios-time';
           }
           else {
@@ -92,30 +89,25 @@ export default function App() {
         },
         tabBarActiveTintColor: 'blue',
         tabBarInactiveTintColor: 'gray',   
-        
-
       })}
       >
       
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }}></Tab.Screen>
       
-      <Tab.Screen name="Ma journée" component={Calendar} options={{headerStyle: {
+      <Tab.Screen name="Mon BP" component={Calendar} options={{headerStyle: {
         height: 80,
         borderBottomWidth: 3,
         borderBottomColor: '#3F71A8',
         }}}></Tab.Screen>
 
-      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated} />} options={{headerStyle: {
+      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated}/>} options={{headerStyle: {
         height: 80,
         borderBottomWidth: 3,
         borderBottomColor: '#3F71A8',
       },}}></Tab.Screen>
-
-      
     </Tab.Navigator>
   </NavigationContainer>
 }
-  
 
 const styles = StyleSheet.create({
   container: {
