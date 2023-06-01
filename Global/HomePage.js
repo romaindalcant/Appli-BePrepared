@@ -18,8 +18,8 @@ export class MyWeb extends React.Component {
     loading : false
   }
   render() {
-    if (this.state.loading)
-    return <ActivityIndicator />;
+    if (this.state.loading){
+    return <ActivityIndicator />;}
     return <WebView
     source={{ uri: 'https://auth.viarezo.fr/oauth/authorize/?redirect_uri=' + REDIRECT_URI + '&client_id=' + CLIENT_ID + '&response_type=code&state=LOL&scope=default' }} 
     onNavigationStateChange={this.handleWebViewNavigationStateChange}
@@ -30,7 +30,9 @@ export class MyWeb extends React.Component {
   handleWebViewNavigationStateChange = async (newNavState) => {
     // Essayer de regler ca grace a previousUrl...
     const { url } = newNavState;
+    
 
+    if (!url) return;
     // handle certain doctypes
     if (url.startsWith(REDIRECT_URI)) {
       this.setState({loading: true})
@@ -69,7 +71,7 @@ export class MyWeb extends React.Component {
         console.log(error);
       });
 
-      this.props.onSuccess?.();
+    this.props.onSuccess?.();
 
       // All done, tell the parent container we're done!
     }}
