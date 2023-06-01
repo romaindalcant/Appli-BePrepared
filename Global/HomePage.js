@@ -23,15 +23,14 @@ export class MyWeb extends React.Component {
     return <WebView
     source={{ uri: 'https://auth.viarezo.fr/oauth/authorize/?redirect_uri=' + REDIRECT_URI + '&client_id=' + CLIENT_ID + '&response_type=code&state=LOL&scope=default' }} 
     onNavigationStateChange={this.handleWebViewNavigationStateChange}
-    style = {styles.webview}
     // essayer de styliser !
     />;
   }
 
   handleWebViewNavigationStateChange = async (newNavState) => {
-  
+    // Essayer de regler ca grace a previousUrl...
     const { url } = newNavState;
-    if (!url) return;
+
     // handle certain doctypes
     if (url.startsWith(REDIRECT_URI)) {
       this.setState({loading: true})
@@ -70,12 +69,12 @@ export class MyWeb extends React.Component {
         console.log(error);
       });
 
-      // All done, tell the parent container we're done!
       this.props.onSuccess?.();
-    }
+
+      // All done, tell the parent container we're done!
+    }}
   };
 
-}
 
 class MainCard extends React.Component{
     render(){
@@ -115,9 +114,6 @@ const styles = StyleSheet.create({
       // backgroundColor: '#C3E9FC',
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    webview:{
-      backgroundColor: '#98C1D9'
     },
     image:{
       width: 300,

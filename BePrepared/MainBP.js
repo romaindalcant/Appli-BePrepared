@@ -13,11 +13,7 @@ export default class MainBP extends React.Component{
     const atelierString = 'Les ateliers >';
     const evenementsString = 'Les évenements >';
     return (
-        // fond d'écran
-        // <ImageBackground
-        //     style={styles.backgroundImage}
-        // source={require('../assets/backgrounds/wavyblue.jpg') }
-         //   >
+        
         <ScrollView contentContainerStyle={styles.container}>
         <Image
         style={styles.image}

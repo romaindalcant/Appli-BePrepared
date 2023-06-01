@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { getToken } from '../auth';
 
-
 export default class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -27,11 +26,12 @@ export default class Profile extends React.Component {
       },
       loading: true,
     };
-    console.log(this.props.setAuthenticated)
+  this.handleLogout = this.handleLogout.bind(this);
   }
 
   handleLogout(){
     // Effectuer les opérations de déconnexion ici
+    console.log(this.handleLogout)
     this.props.setAuthenticated(false); // Mettre à jour l'état à false
   };
 
@@ -100,8 +100,8 @@ export default class Profile extends React.Component {
 
         <TouchableOpacity
           style={styles.loginBtn}
-          onPress={() => this.props.navigation.navigate('ListPage')}
-          // ou essayer onPress={() => this.props.navigation.navigate('HomeStack',{screen: 'ListPage'})}
+          // onPress={() => this.props.navigation.navigate('ListPage')}
+          onPress={() => this.props.navigation.navigate('HomeStack',{screen: 'ListPage'})}
         >
           <Text style={styles.loginText}>Je réserve un atelier</Text>
         </TouchableOpacity>

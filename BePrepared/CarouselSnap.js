@@ -10,7 +10,6 @@ import Card from './AtelierCard'
 
 export default class SnapCarousel extends React.Component {
 
- 
     constructor(props){
         super(props);
         this.section = this.props.section

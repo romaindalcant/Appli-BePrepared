@@ -1,32 +1,65 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { StyleSheet, View, Image, Text, ScrollView, TouchableOpacity} from 'react-native';
+import Creneau from './Creneau';
 
 const AtelierPage = ({route}) => {
   const { imageSource, title, description, time, location } = route.params
   return (
-    <View style={styles.backgroundContainer}>
+    <ScrollView style={styles.backgroundContainer}>
     <View style={styles.container}>
-      <Image style={styles.image} source={imageSource} resizeMode="cover" />
+      <Image style={styles.image} source={imageSource} />
       <View style={styles.content}>
         <Text style={styles.title}>{title}{'\u2728'}</Text>
         <Text style={styles.description}>{description}</Text>
         <View style={styles.bottom}>
-          <Text style={styles.time}>🕑 {time}</Text>
-          <Text style={styles.location}>📍{location} </Text>
+          {/* <Text style={styles.time}>🕑 {time}</Text>
+          <Text style={styles.location}>📍{location} </Text> */}
         </View>
+      <Creneau time="9h15" location="SD.102" disponibilite="0/1"></Creneau>
+      <Creneau time="10h" location="SD.08" disponibilite="3/9"></Creneau>
+      <Creneau time="12h" location="SD.09" disponibilite="0/1"></Creneau>
+      <Creneau time="18h" location="Rideaux" disponibilite="0/1"></Creneau>
+      <Creneau time="15h" location="Rideaux" disponibilite="0/1"></Creneau>
+
       </View>
+      
+      
     </View>
-    </View>
+    </ScrollView>
   );
 };
+// Automatiser ca en fetchant tout ce qu'il faut!!
 
 const styles = StyleSheet.create({
     
-
 backgroundContainer:{
     backgroundColor:'#C3E9FC',
     height:'100%'
     },
+  creneauContainer:{
+      borderWidth:1,
+      borderRadius:5,
+      backgroundColor: '#FFFFFF',
+      justifyContent: 'space-around',
+      alignItems:'center',
+      width: '100%',   
+      height: 50,
+      flexDirection: 'row',
+      marginTop: 4
+  },
+  information: {
+    fontSize: 15,
+    fontWeight:500
+},
+  papsDispo:{
+    borderWidth: 0.5,
+    borderRadius: 10,
+    padding:3,
+    backgroundColor: '#93C572'	
+  },
+  papsPasDispo:{
+
+  },
   container: {
     // elevation: 5,
     // shadowColor: 'black',
@@ -36,17 +69,21 @@ backgroundContainer:{
     // width: 0,
     // height: 2,
     // },
-    flex: 1,
+    flexDirection:'column',
+    justifyContent:'flex-end',
     borderWidth: 0.5,
     backgroundColor: '#fff',
     borderRadius: 10,
     margin: 10,
     overflow: 'hidden',
+    height:'100%'
   },
   image: {
     flex: 0.3,
     width: '100%',
-    height: undefined,
+    minHeight: 130,
+    maxHeight:150,
+    resizeMode:"cover"
   },
   content: {
     flex: 0.7,
