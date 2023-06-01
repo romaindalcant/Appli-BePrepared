@@ -65,7 +65,7 @@ export default class AtelierPage extends React.Component{
             return (
               <View>
                 {data.map((item, index) => (
-                  <Card key={index} title={data[index].title} imageSource={data[index].imageSource} infoTopRight={data[index].infoTopRight} infoBottomRight={data[index].infoBottomRight} navigation={this.props.navigation} />
+                  <Card key={index} title={data[index].title} imageSource={data[index].imageSource}/>
                 ))}
               </View>
             );

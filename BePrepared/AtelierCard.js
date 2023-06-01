@@ -29,8 +29,6 @@ export default class Card extends React.Component{
     super(props)
     this.imageSource = this.props.imageSource
     this.title = this.props.title
-    this.infoBottomRight = this.props.infoBottomRight
-    this.infoTopRight = this.props.infoTopRight
   } 
     
   render(){
@@ -43,19 +41,11 @@ export default class Card extends React.Component{
       {
       imageSource : this.imageSource,
       title : this.title,
-      location : this.infoBottomRight,
-      time :this.infoTopRight,
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'
       })
 
       }>
         <Image style={styles.cardImage} source={this.imageSource} />
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>{this.infoTopRight}</Text>
-        </View>
-        <View style={styles.infoContainer2}>
-          <Text style={styles.infoText}>{this.infoBottomRight}</Text>
-        </View>
         
         <Text style={styles.title}>{this.title}</Text>
       </TouchableOpacity>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, Image, Text, StyleSheet, Button, Animated, ActivityIndicator } from 'react-native'
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -29,13 +29,16 @@ function HomeStack() {
     <Stack.Screen name="AtelierPage" component={AtelierPage} initialParams={{ title: 'Hello, world!' }}></Stack.Screen>
   </Stack.Navigator>
 }
+
+
+
 export default function App() {
   const [loading, setLoading] = useState(true);
 
   const [authenticated, setAuthenticated] = useState(false);
 
   const onSuccess = useCallback(() => setAuthenticated(true), []);
-
+  
   useEffect(() => {
     getToken().then(token => !!token, () => false).then(hasToken => {
       setAuthenticated(hasToken);
@@ -100,8 +103,8 @@ export default function App() {
           borderBottomColor: '#3F71A8',
         }
       }}></Tab.Screen>
-
-      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated} />} options={{
+{/* Essayer de créer un composant Profile2 plutot que mettre inline function */}
+      <Tab.Screen name="Profil" component={()=> <Profile setAuthenticated={setAuthenticated} />} options={{
         headerStyle: {
           height: 80,
           borderBottomWidth: 3,
@@ -120,3 +123,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   }
 });
+
+// Déchibrer la navigation

@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Text, ScrollView, TouchableOpacity} from 'reac
 import Creneau from './Creneau';
 
 const AtelierPage = ({route}) => {
-  const { imageSource, title, description, time, location } = route.params
+  const { imageSource, title, description } = route.params
   return (
     <ScrollView style={styles.backgroundContainer}>
     <View style={styles.container}>
@@ -12,8 +12,7 @@ const AtelierPage = ({route}) => {
         <Text style={styles.title}>{title}{'\u2728'}</Text>
         <Text style={styles.description}>{description}</Text>
         <View style={styles.bottom}>
-          {/* <Text style={styles.time}>🕑 {time}</Text>
-          <Text style={styles.location}>📍{location} </Text> */}
+          
         </View>
       <Creneau time="9h15" location="SD.102" disponibilite="0/1"></Creneau>
       <Creneau time="10h" location="SD.08" disponibilite="3/9"></Creneau>
@@ -28,7 +27,7 @@ const AtelierPage = ({route}) => {
     </ScrollView>
   );
 };
-// Automatiser ca en fetchant tout ce qu'il faut!!
+// Automatiser ca en fetchant tout ce qu'il faut
 
 const styles = StyleSheet.create({
     

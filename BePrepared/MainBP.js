@@ -19,6 +19,8 @@ export default class MainBP extends React.Component{
         style={styles.image}
         source={require('../assets/img/logo_BP.png')}
         ></Image>
+
+        {/* <Image style={styles.planning} source={require('../assets/img/planning.jpg')}></Image> */}
         <View style={styles.smallContainer}>
             <TouchableOpacity style={styles.subtitleContainer} onPress={() => this.props.navigation.navigate('ListPage',{section : 'ateliers'})} ><Text style={styles.subtitle}>{atelierString}</Text></TouchableOpacity>
             <CarouselSnap section='ateliers'></CarouselSnap>
@@ -48,6 +50,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center', 
     },
+    // planning: {
+    //     width: '80%',
+    //     resizeMode: 'contain',
+    //     margin: 0,
+    //     marginTop: -20, // Modification
+    //   },
+    //   logoContainer: {
+    //     marginTop: 20, // Modification
+    //   },
     image:{ 
         flex: 2, 
         maxHeight: 160, 
