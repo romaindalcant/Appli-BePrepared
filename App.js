@@ -1,5 +1,5 @@
-import React, {useState,useEffect,useCallback} from 'react'
-import {View, Image, Text, StyleSheet,Button,Animated, ActivityIndicator} from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react'
+import { View, Image, Text, StyleSheet, Button, Animated, ActivityIndicator } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,15 +12,15 @@ import Calendar from './Global/Calendar';
 import Profile from './Global/Profile';
 import HomePage from './Global/HomePage';
 import Card from './BePrepared/AtelierCard';
-import  ListPage  from './BePrepared/ListPage';
+import ListPage from './BePrepared/ListPage';
 import SnapCarousel from './BePrepared/CarouselSnap';
 import AtelierPage from './BePrepared/AtelierPage';
-import {MyWeb} from './Global/HomePage';
+import { MyWeb } from './Global/HomePage';
 
-const Tab = createBottomTabNavigator ()
+const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
-function HomeStack(){
+function HomeStack() {
   return <Stack.Navigator initialRouteName='HomePage'>
     <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false }}></Stack.Screen>
     <Stack.Screen name="MainForum" component={MainForum} options={{ headerShown: false }}></Stack.Screen>
@@ -45,21 +45,20 @@ export default function App() {
 
   if (loading) {
     return <View style={styles.container}>
-              <ActivityIndicator size="large" color="#0000ff" />
-          </View>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
   }
 
-  if (!authenticated){
+  if (!authenticated) {
     return <MyWeb onSuccess={onSuccess} />;
   }
-
   return <NavigationContainer>
-    <Tab.Navigator 
-    screenOptions={({ route }) => ({
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'Home') {
-            iconName = focused ? 'ios-information-circle': 'ios-information-circle-outline';
+            iconName = focused ? 'ios-information-circle' : 'ios-information-circle-outline';
           } else if (route.name === 'Mon BP') {
             iconName = focused ? 'ios-time' : 'ios-time';
           }
@@ -68,7 +67,7 @@ export default function App() {
           }
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />
-        
+
         },
         tabBarStyle: {
           backgroundColor: '#ffffff',
@@ -88,23 +87,27 @@ export default function App() {
           borderTopRightRadius: 40,
         },
         tabBarActiveTintColor: 'blue',
-        tabBarInactiveTintColor: 'gray',   
+        tabBarInactiveTintColor: 'gray',
       })}
-      >
-      
-      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }}></Tab.Screen>
-      
-      <Tab.Screen name="Mon BP" component={Calendar} options={{headerStyle: {
-        height: 80,
-        borderBottomWidth: 3,
-        borderBottomColor: '#3F71A8',
-        }}}></Tab.Screen>
+    >
 
-      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated}/>} options={{headerStyle: {
-        height: 80,
-        borderBottomWidth: 3,
-        borderBottomColor: '#3F71A8',
-      },}}></Tab.Screen>
+      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }}></Tab.Screen>
+
+      <Tab.Screen name="Mon BP" component={Calendar} options={{
+        headerStyle: {
+          height: 80,
+          borderBottomWidth: 3,
+          borderBottomColor: '#3F71A8',
+        }
+      }}></Tab.Screen>
+
+      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated} />} options={{
+        headerStyle: {
+          height: 80,
+          borderBottomWidth: 3,
+          borderBottomColor: '#3F71A8',
+        },
+      }}></Tab.Screen>
     </Tab.Navigator>
   </NavigationContainer>
 }
