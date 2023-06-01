@@ -3,9 +3,9 @@
 // Police: Roboto/ sans serif. Importer ? 
 
 import React from 'react';
-import {View,Image,StyleSheet, StatusBar,SafeAreaView,TouchableOpacity,ActivityIndicator } from 'react-native';
+import { View, Image, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
-import {setToken, setRefreshToken, CLIENT_ID, CLIENT_SECRET } from '../auth';
+import { setToken, setRefreshToken, CLIENT_ID, CLIENT_SECRET } from '../auth';
 
 
 const REDIRECT_URI = 'https://app.beprepared.forum-cs.fr/oauth_callback'
@@ -15,11 +15,12 @@ const REDIRECT_URI = 'https://app.beprepared.forum-cs.fr/oauth_callback'
 
 export class MyWeb extends React.Component {
   state = {
-    loading : false
+    loading: false
   }
   render() {
-    if (this.state.loading){
-    return <ActivityIndicator />;}
+    console.log('On est dans MyWeb')
+    if (this.state.loading)
+      return <ActivityIndicator />;
     return <WebView
     source={{ uri: 'https://auth.viarezo.fr/oauth/authorize/?redirect_uri=' + REDIRECT_URI + '&client_id=' + CLIENT_ID + '&response_type=code&state=LOL&scope=default' }} 
     onNavigationStateChange={this.handleWebViewNavigationStateChange}
@@ -35,7 +36,7 @@ export class MyWeb extends React.Component {
     if (!url) return;
     // handle certain doctypes
     if (url.startsWith(REDIRECT_URI)) {
-      this.setState({loading: true})
+      this.setState({ loading: true })
       // console.warn(url);
       let params = url.split('?');
       // Strip the first part of the URL (before "?"")
@@ -56,20 +57,21 @@ export class MyWeb extends React.Component {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'grant_type=authorization_code' +
-              '&code=' + parsed_values.code +
-              '&redirect_uri=' + REDIRECT_URI +
-              '&client_id=' + CLIENT_ID +
-              '&client_secret=' + CLIENT_SECRET,
+          '&code=' + parsed_values.code +
+          '&redirect_uri=' + REDIRECT_URI +
+          '&client_id=' + CLIENT_ID +
+          '&client_secret=' + CLIENT_SECRET,
       })
-      .then((response) => {
-        return response.json()})
-      .then(data => {
-        setToken(data);
-        setRefreshToken(data)
-      })
-      .catch(error => {
-        console.log(error);
-      });
+        .then((response) => {
+          return response.json()
+        })
+        .then(data => {
+          setToken(data);
+          setRefreshToken(data)
+        })
+        .catch(error => {
+          console.log(error);
+        });
 
     this.props.onSuccess?.();
 
@@ -78,35 +80,35 @@ export class MyWeb extends React.Component {
   };
 
 
-class MainCard extends React.Component{
-    render(){
-      return (
-        <TouchableOpacity style={styles.card} onPress={()=> this.props.navigation.navigate(this.props.name)}>
-          <View>
-            <Image style={styles.logo} source={this.props.image} />
-          </View>
-        </TouchableOpacity>
-      );
-    }
+class MainCard extends React.Component {
+  render() {
+    return (
+      <TouchableOpacity style={styles.card} onPress={() => this.props.navigation.navigate(this.props.name)}>
+        <View>
+          <Image style={styles.logo} source={this.props.image} />
+        </View>
+      </TouchableOpacity>
+    );
+  }
 }
 
-export default class HomePage extends React.Component{
-    state = {
-      authenticated: false,
-    };
+export default class HomePage extends React.Component {
+  state = {
+    authenticated: false,
+  };
 
-    render(){
-      StatusBar.setBarStyle('dark-content', true);
-      if(!this.state.authenticated) {
-        return <MyWeb onSuccess={() => this.setState({authenticated: true})} />
-      }
-        return (
-          <SafeAreaView style={styles.container}>
-              <MainCard image={require('../assets/img/Forum-01.png')} name="MainForum" navigation={this.props.navigation}/>
-              <MainCard image={require('../assets/img/logo_BP.png')} name="MainBP" navigation={this.props.navigation}/>
-          </SafeAreaView>
-        );
+  render() {
+    StatusBar.setBarStyle('dark-content', true);
+    if (!this.state.authenticated) {
+      return <MyWeb onSuccess={() => this.setState({ authenticated: true })} />
     }
+    return (
+      <SafeAreaView style={styles.container}>
+        <MainCard image={require('../assets/img/Forum-01.png')} name="MainForum" navigation={this.props.navigation} />
+        <MainCard image={require('../assets/img/logo_BP.png')} name="MainBP" navigation={this.props.navigation} />
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -129,14 +131,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '80%',
     height: '40%',
-    margin: 20, 
+    margin: 20,
     backgroundColor: '#f5f5f5',
     borderRadius: 10,
     borderWidth: 1
-    },
-    logo: {
-        width: 230,
-        height: 230,
-        resizeMode: 'contain',
-    },
+  },
+  logo: {
+    width: 230,
+    height: 230,
+    resizeMode: 'contain',
+  },
 })  
