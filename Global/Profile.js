@@ -118,11 +118,11 @@ export default class Profile extends React.Component {
             <Image
               style={styles.image}
               //mettre image perso avec la bonne requête ! (on ne peut pas)
-              source={require('../assets/emojis/user.png')}
+              source={require('../assets/asso.png')}
             ></Image>
             <View>
-              <Text style={styles.name}>{data.personalInfo.firstName}</Text>
-              <Text style={styles.name}>{data.personalInfo.lastName}</Text>
+              <Text style={styles.name}>{data.personalInfo.firstName} {data.personalInfo.lastName}</Text>
+              <Text style={{ ...styles.name, marginTop: 10 }}>P{data.personalInfo.promo}</Text>
             </View>
           </View>
 
@@ -134,7 +134,7 @@ export default class Profile extends React.Component {
         <TouchableOpacity
           style={styles.loginBtn}
           // onPress={() => this.props.navigation.navigate('ListPage')}
-          onPress={() => this.props.navigation.navigate('HomeStack',{screen: 'ListPage'})}
+          onPress={() => this.props.navigation.navigate('HomeStack', { screen: 'ListPage' })}
         >
           <Text style={styles.loginText}>Je réserve un atelier</Text>
         </TouchableOpacity>
