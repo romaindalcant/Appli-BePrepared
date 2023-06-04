@@ -1,6 +1,8 @@
 //Bouton deconnexion, bouton pour activer les notifications/tester les pushs
 import React from 'react';
 import * as Notifications from 'expo-notifications'
+import { NavigationContainer, useNavigation, withNavigation } from '@react-navigation/native';
+
 
 import {
   View,
@@ -134,7 +136,7 @@ export default class Profile extends React.Component {
         <TouchableOpacity
           style={styles.loginBtn}
           // onPress={() => this.props.navigation.navigate('ListPage')}
-          onPress={() => this.props.navigation.navigate('HomeStack', { screen: 'ListPage' })}
+          onPress={() => this.props.navigation.navigate("HomeStack", { screen: 'ListPage' })}
         >
           <Text style={styles.loginText}>Je réserve un atelier</Text>
         </TouchableOpacity>
