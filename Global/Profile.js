@@ -1,8 +1,7 @@
 //Bouton deconnexion, bouton pour activer les notifications/tester les pushs
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications'
-import { NavigationContainer, useNavigation, withNavigation } from '@react-navigation/native';
-
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 import {
   View,
@@ -22,36 +21,29 @@ import {
 } from 'react-native';
 import { getToken } from '../auth';
 
-export default class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {
-        token: null,
-        personalInfo: null,
-      },
-      loading: true,
-    };
-    this.handleLogout = this.handleLogout.bind(this)
-  }
 
-  handleLogout() {
-    // Effectuer les opérations de déconnexion ici
-    console.log(this.handleLogout)
-    this.props.setAuthenticated(false); // Mettre à jour l'état à false
+export default function Profile(props) {
+  const navigation = useNavigation();
+  const [data, setData] = useState({
+    token: null,
+    personalInfo: null,
+  });
+  const [loading, setLoading] = useState(true);
+
+  const handleLogout = () => {
+    props.setAuthenticated(false);
   };
 
-
-  redirectToSettings() {  //Redirige l'utilisateur vers les settings pour activer les notifications
+  const redirectToSettings = () => {
     appSettingsUrl = Platform.select({
       ios: 'app-settings:',
       android: 'android.settings.APP_NOTIFICATION_SETTINGS'
     });
 
     Linking.openURL(appSettingsUrl);
-  }
+  };
 
-  async sendNotification() {    //Permet l'envoi d'une notification
+  const sendNotification = async () => {
     await Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -68,95 +60,226 @@ export default class Profile extends React.Component {
       },
       trigger: null, // Notification immédiate
     });
-  }
+  };
 
-  async getPersonalInfo() {
+  const getPersonalInfo = async () => {
+    try {
+      const token = await getToken();
+      setData(prevData => ({ ...prevData, token }));
 
-    const token = await getToken().then((response) => {
-      this.setState((prevState) => ({
-        data: {
-          ...prevState.data,
-          token: response,
+      const personalInfoResponse = await fetch('https://auth.viarezo.fr/api/user/show/me', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      }));
-      return response
-    });
+      });
 
-    const personalInfo = await fetch('https://auth.viarezo.fr/api/user/show/me', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.state.data.token}`,
-      },
-    }).then((response) => response.json());
+      if (!personalInfoResponse.ok) {
+        throw new Error('Failed to fetch personal info');
+      }
 
-    this.setState({ loading: false });
-    this.setState((prevState) => ({
-      data: {
-        ...prevState.data,
-        personalInfo: personalInfo,
-      },
-    }));
+      const personalInfo = await personalInfoResponse.json();
+
+      setData(prevData => ({ ...prevData, personalInfo }));
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching personal info:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getPersonalInfo();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator />;
   }
 
-  componentDidMount() {
-    this.getPersonalInfo();
+  if (!data.personalInfo) {
+    return null;
   }
 
-  render() {
-    const { data, loading } = this.state;
-
-    if (loading) {
-      return <ActivityIndicator />;
-    }
-
-    if (!data.personalInfo) {
-      return null;
-    }
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.profileContainer}>
-          <View style={styles.profile}>
-            <Image
-              style={styles.image}
-              //mettre image perso avec la bonne requête ! (on ne peut pas)
-              source={require('../assets/asso.png')}
-            ></Image>
-            <View>
-              <Text style={styles.name}>{data.personalInfo.firstName} {data.personalInfo.lastName}</Text>
-              <Text style={{ ...styles.name, marginTop: 10 }}>P{data.personalInfo.promo}</Text>
-            </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.profileContainer}>
+        <View style={styles.profile}>
+          <Image
+            style={styles.image}
+            source={require('../assets/asso.png')}
+          ></Image>
+          <View>
+            <Text style={styles.name}>{data.personalInfo.firstName} {data.personalInfo.lastName}</Text>
+            <Text style={{ ...styles.name, marginTop: 10 }}>P{data.personalInfo.promo}</Text>
           </View>
-
-          <TouchableOpacity onPress={this.handleLogout}>
-            <Text style={styles.forgotText}>Se déconnecter</Text>
-          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.loginBtn}
-          // onPress={() => this.props.navigation.navigate('ListPage')}
-          onPress={() => this.props.navigation.navigate("Home", { screen: 'ListPage' })}
-        >
-          <Text style={styles.loginText}>Je réserve un atelier</Text>
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={styles.forgotText}>Se déconnecter</Text>
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity
-          style={styles.loginBtn}
-          onPress={() => this.props.navigation.navigate('Mon BP')}
-        >
-          <Text style={styles.loginText}>Voir mes ateliers</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.loginBtn}
+        // onPress={() => navigation.navigate('Home', { screen: 'ListPage', section: 'ateliers' })}
+        onPress={() => navigation.navigate('Home', { screen: 'ListPage', params: { section: 'ateliers' } })}
 
-        <TouchableOpacity   //Bouton qui redirige l'utilisateur vers ses settings de notifs
-          style={styles.loginBtn}
-          onPress={this.redirectToSettings}>
-          <Text style={styles.loginText}> Activer les notifications </Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-    );
-  }
+      >
+        <Text style={styles.loginText}>Je réserve un atelier</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.loginBtn}
+        onPress={() => navigation.navigate('Mon BP')}
+      >
+        <Text style={styles.loginText}>Voir mes ateliers</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.loginBtn}
+        onPress={redirectToSettings}
+      >
+        <Text style={styles.loginText}> Activer les notifications </Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
 }
+
+// export default class Profile extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       data: {
+//         token: null,
+//         personalInfo: null,
+//       },
+//       loading: true,
+//     };
+//     this.handleLogout = this.handleLogout.bind(this)
+//   }
+
+//   handleLogout() {
+//     // Effectuer les opérations de déconnexion ici
+//     console.log(this.handleLogout)
+//     this.props.setAuthenticated(false); // Mettre à jour l'état à false
+//   };
+
+
+//   redirectToSettings() {  //Redirige l'utilisateur vers les settings pour activer les notifications
+//     appSettingsUrl = Platform.select({
+//       ios: 'app-settings:',
+//       android: 'android.settings.APP_NOTIFICATION_SETTINGS'
+//     });
+
+//     Linking.openURL(appSettingsUrl);
+//   }
+
+//   async sendNotification() {    //Permet l'envoi d'une notification
+//     await Notifications.setNotificationHandler({
+//       handleNotification: async () => ({
+//         shouldShowAlert: true,
+//         shouldPlaySound: true,
+//         shouldSetBadge: false,
+//       }),
+//     });
+
+//     await Notifications.scheduleNotificationAsync({
+//       content: {
+//         title: 'Notification',
+//         body: 'Decris moi ce que tu veux',
+//         sound: 'default',
+//       },
+//       trigger: null, // Notification immédiate
+//     });
+//   }
+
+//   async getPersonalInfo() {
+
+//     const token = await getToken().then((response) => {
+//       this.setState((prevState) => ({
+//         data: {
+//           ...prevState.data,
+//           token: response,
+//         },
+//       }));
+//       return response
+//     });
+
+//     const personalInfo = await fetch('https://auth.viarezo.fr/api/user/show/me', {
+//       method: 'GET',
+//       headers: {
+//         Authorization: `Bearer ${this.state.data.token}`,
+//       },
+//     }).then((response) => response.json());
+
+//     this.setState({ loading: false });
+//     this.setState((prevState) => ({
+//       data: {
+//         ...prevState.data,
+//         personalInfo: personalInfo,
+//       },
+//     }));
+//   }
+
+//   componentDidMount() {
+//     this.getPersonalInfo();
+//   }
+
+//   render() {
+//     const { data, loading } = this.state;
+
+//     if (loading) {
+//       return <ActivityIndicator />;
+//     }
+
+//     if (!data.personalInfo) {
+//       return null;
+//     }
+
+//     return (
+//       <SafeAreaView style={styles.container}>
+//         <View style={styles.profileContainer}>
+//           <View style={styles.profile}>
+//             <Image
+//               style={styles.image}
+//               //mettre image perso avec la bonne requête ! (on ne peut pas)
+//               source={require('../assets/asso.png')}
+//             ></Image>
+//             <View>
+//               <Text style={styles.name}>{data.personalInfo.firstName} {data.personalInfo.lastName}</Text>
+//               <Text style={{ ...styles.name, marginTop: 10 }}>P{data.personalInfo.promo}</Text>
+//             </View>
+//           </View>
+
+//           <TouchableOpacity onPress={this.handleLogout}>
+//             <Text style={styles.forgotText}>Se déconnecter</Text>
+//           </TouchableOpacity>
+//         </View>
+
+//         <TouchableOpacity
+//           style={styles.loginBtn}
+//           // onPress={() => this.props.navigation.navigate('ListPage')}
+//           onPress={() => this.props.navigation.navigate("Home", { screen: 'ListPage' })}
+//         >
+//           <Text style={styles.loginText}>Je réserve un atelier</Text>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity
+//           style={styles.loginBtn}
+//           onPress={() => this.props.navigation.navigate('Mon BP')}
+//         >
+//           <Text style={styles.loginText}>Voir mes ateliers</Text>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity   //Bouton qui redirige l'utilisateur vers ses settings de notifs
+//           style={styles.loginBtn}
+//           onPress={this.redirectToSettings}>
+//           <Text style={styles.loginText}> Activer les notifications </Text>
+//         </TouchableOpacity>
+//       </SafeAreaView>
+//     );
+//   }
+// }
 
 const styles = StyleSheet.create({
   name: {

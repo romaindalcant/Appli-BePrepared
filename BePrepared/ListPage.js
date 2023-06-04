@@ -52,7 +52,6 @@ export default class AtelierPage extends React.Component {
         infoBottomRight: 'Théatre Rousseau'
       },
     ]
-
     this.section = this.props.route.params.section;
 
     this.data = (this.section === 'ateliers') ? ateliersData : EvenementsData;
