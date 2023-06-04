@@ -16,7 +16,7 @@ const AtelierPage = ({ route }) => {
           </View>
           <Creneau time="9h15" location="SD.102" disponibilite="0/1"></Creneau>
           <Creneau time="10h" location="SD.08" disponibilite="3/9"></Creneau>
-          <Creneau time="12h" location="SD.09" disponibilite="0/1"></Creneau>
+          <Creneau time="12h" location="SD.09" disponibilite="1/1"></Creneau>
           <Creneau time="18h" location="Rideaux" disponibilite="0/1"></Creneau>
           <Creneau time="15h" location="Rideaux" disponibilite="0/1"></Creneau>
 
