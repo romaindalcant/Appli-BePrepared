@@ -136,7 +136,7 @@ export default class Profile extends React.Component {
         <TouchableOpacity
           style={styles.loginBtn}
           // onPress={() => this.props.navigation.navigate('ListPage')}
-          onPress={() => this.props.navigation.navigate("HomeStack", { screen: 'ListPage' })}
+          onPress={() => this.props.navigation.navigate("Home", { screen: 'ListPage' })}
         >
           <Text style={styles.loginText}>Je réserve un atelier</Text>
         </TouchableOpacity>

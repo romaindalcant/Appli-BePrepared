@@ -103,13 +103,16 @@ export default function App() {
         }
       }}></Tab.Screen>
       {/* Essayer de créer un composant Profile2 plutot que mettre inline function */}
-      <Tab.Screen name="Profil" component={() => <Profile setAuthenticated={setAuthenticated} />} options={{
-        headerStyle: {
-          height: 80,
-          borderBottomWidth: 3,
-          borderBottomColor: '#3F71A8',
-        },
-      }}></Tab.Screen>
+      <Tab.Screen name="Profil"
+        options={{
+          headerStyle: {
+            height: 80,
+            borderBottomWidth: 3,
+            borderBottomColor: '#3F71A8',
+          },
+        }}
+      >
+        {() => <Profile setAuthenticated={setAuthenticated} />}</Tab.Screen>
     </Tab.Navigator>
   </NavigationContainer>
 }
